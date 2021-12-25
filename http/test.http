@@ -1,0 +1,10 @@
+GET http://localhost:16300/hello
+Accept: application/json
+
+###
+
+POST http://localhost:16300/hello/post
+Accept: application/json
+Content-Type: application/x-www-form-urlencoded
+
+name=liuqiang
