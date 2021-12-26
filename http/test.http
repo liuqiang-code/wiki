@@ -12,3 +12,6 @@ name=liuqiang
 ###
 GET http://localhost:16300/test/list
 Accept: application/json
+
+###
+GET http://localhost:16300/demo/list
