@@ -1,6 +1,7 @@
 package com.bigstrong.wiki.service;
 
-import com.bigstrong.wiki.domain.Ebook;
+import com.bigstrong.wiki.Resp.EbookResp;
+import com.bigstrong.wiki.req.EbookReq;
 
 import java.util.List;
 
@@ -12,7 +13,8 @@ import java.util.List;
 public interface EbookService {
     /**
      * 获取ebook list
-     * @return
+     * @param req 获取电子书请求参数
+     * @return 电子书 list
      */
-    List<Ebook> getEbookList();
+    List<EbookResp> getEbookList(EbookReq req);
 }

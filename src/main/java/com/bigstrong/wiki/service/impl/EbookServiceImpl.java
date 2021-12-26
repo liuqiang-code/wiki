@@ -1,8 +1,12 @@
 package com.bigstrong.wiki.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.bigstrong.wiki.Resp.EbookResp;
 import com.bigstrong.wiki.domain.Ebook;
 import com.bigstrong.wiki.mapper.EbookMapper;
+import com.bigstrong.wiki.req.EbookReq;
 import com.bigstrong.wiki.service.EbookService;
+import com.bigstrong.wiki.util.CopyUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,7 +23,8 @@ public class EbookServiceImpl implements EbookService {
     private EbookMapper ebookMapper;
 
     @Override
-    public List<Ebook> getEbookList() {
-        return ebookMapper.selectList(null);
+    public List<EbookResp> getEbookList(EbookReq req) {
+        List<Ebook> ebooks = ebookMapper.selectList(new LambdaQueryWrapper<Ebook>().like(Ebook::getName, req.getName()));
+        return CopyUtil.copyList(ebooks, EbookResp.class);
     }
 }
