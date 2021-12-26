@@ -8,3 +8,7 @@ Accept: application/json
 Content-Type: application/x-www-form-urlencoded
 
 name=liuqiang
+
+###
+GET http://localhost:16300/test/list
+Accept: application/json

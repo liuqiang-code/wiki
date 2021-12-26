@@ -1,8 +1,12 @@
 package com.bigstrong.wiki.controller;
 
+import com.bigstrong.wiki.domain.Test;
+import com.bigstrong.wiki.service.TestService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author BigStrong
@@ -11,6 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class TestController {
+
+    @Resource
+    private TestService testService;
+
     @RequestMapping("/hello")
     public String hello() {
         return "hello world!";
@@ -19,5 +27,10 @@ public class TestController {
     @PostMapping("/hello/post")
     public String helloPost(String name) {
         return "hello world! post " + name;
+    }
+
+    @RequestMapping("test/list")
+    public List<Test> list() {
+        return testService.list();
     }
 }
