@@ -8,6 +8,7 @@ import com.bigstrong.wiki.req.EbookReq;
 import com.bigstrong.wiki.service.EbookService;
 import com.bigstrong.wiki.util.CopyUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -24,7 +25,8 @@ public class EbookServiceImpl implements EbookService {
 
     @Override
     public List<EbookResp> getEbookList(EbookReq req) {
-        List<Ebook> ebooks = ebookMapper.selectList(new LambdaQueryWrapper<Ebook>().like(Ebook::getName, req.getName()));
+        List<Ebook> ebooks = ebookMapper.selectList(new LambdaQueryWrapper<Ebook>().like(!StringUtils.isEmpty(req.getName()),
+                Ebook::getName, req.getName()));
         return CopyUtil.copyList(ebooks, EbookResp.class);
     }
 }
