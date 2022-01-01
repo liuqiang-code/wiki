@@ -88,7 +88,6 @@ for (let i = 0; i < 23; i++) {
 export default defineComponent({
   name: 'Home',
   setup() {
-    console.log('setup')
     const ebooks = ref();
     const ebooks1 = reactive({books: []})
     onMounted(() => {
@@ -97,7 +96,6 @@ export default defineComponent({
         const data = response.data;
         ebooks.value = data.data;
         ebooks1.books = data.data;
-        console.log(response);
       })
     });
 
