@@ -8,7 +8,7 @@ import lombok.Data;
  * @description ebook 请求参数
  */
 @Data
-public class EbookReq {
+public class EbookReq extends PageReq {
     private Integer id;
 
     private String name;

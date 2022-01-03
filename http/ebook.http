@@ -1,1 +1,1 @@
-GET http://localhost:16300/ebook/list?name=教程
+GET http://localhost:16300/ebook/list?page=1&size=2

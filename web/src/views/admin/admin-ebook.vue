@@ -39,7 +39,7 @@ export default defineComponent({
     const ebooks = ref();
     const pagination = ref({
       current: 1,
-      pageSize: 10,
+      pageSize: 4,
       total: 0
     });
     const loading = ref(false);
