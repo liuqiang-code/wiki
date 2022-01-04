@@ -2,17 +2,19 @@ package com.bigstrong.wiki.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.bigstrong.wiki.Resp.EbookResp;
+import com.bigstrong.wiki.Resp.EbookQueryResp;
 import com.bigstrong.wiki.Resp.PageResp;
 import com.bigstrong.wiki.domain.Ebook;
 import com.bigstrong.wiki.mapper.EbookMapper;
-import com.bigstrong.wiki.req.EbookReq;
+import com.bigstrong.wiki.req.EbookQueryReq;
+import com.bigstrong.wiki.req.EbookSaveReq;
 import com.bigstrong.wiki.service.EbookService;
 import com.bigstrong.wiki.util.CopyUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author BigStrong
@@ -25,19 +27,30 @@ public class EbookServiceImpl implements EbookService {
     private EbookMapper ebookMapper;
 
     @Override
-    public PageResp<EbookResp> getEbookList(EbookReq req) {
+    public PageResp<EbookQueryResp> getEbookList(EbookQueryReq req) {
         // 设置分页参数
         Page<Ebook> ebookPage = new Page<>(req.getPage(), req.getSize());
 
-        Page<Ebook> ebookList = ebookMapper.selectPage(ebookPage, new LambdaQueryWrapper<Ebook>().like(Objects.nonNull(req.getName()),
+        Page<Ebook> ebookList = ebookMapper.selectPage(ebookPage, new LambdaQueryWrapper<Ebook>().like(!ObjectUtils.isEmpty(req.getName()),
                 Ebook::getName, req.getName()));
 
-        List<EbookResp> respList = CopyUtil.copyList(ebookList.getRecords(), EbookResp.class);
+        List<EbookQueryResp> respList = CopyUtil.copyList(ebookList.getRecords(), EbookQueryResp.class);
 
-        PageResp<EbookResp> pageResp = new PageResp<>();
+        PageResp<EbookQueryResp> pageResp = new PageResp<>();
         pageResp.setTotal(ebookList.getTotal());
         pageResp.setData(respList);
 
         return pageResp;
+    }
+
+    @Override
+    public void save(EbookSaveReq req) {
+        if (ObjectUtils.isEmpty(req.getId())) {
+            // 新增
+            ebookMapper.insert(CopyUtil.copy(req, Ebook.class));
+        } else {
+            // 更新
+            ebookMapper.updateById(CopyUtil.copy(req, Ebook.class));
+        }
     }
 }

@@ -33,6 +33,10 @@ public class CommonResp<T> {
         this.message = message;
     }
 
+    public static CommonResp success() {
+        return new CommonResp(null);
+    }
+
     public static <T> CommonResp<T> success(T data) {
         return new CommonResp(data);
     }

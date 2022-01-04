@@ -8,7 +8,7 @@ import lombok.Data;
  * @description 获取ebook响应参数
  */
 @Data
-public class EbookResp {
+public class EbookQueryResp {
     private Integer id;
 
     private String name;
