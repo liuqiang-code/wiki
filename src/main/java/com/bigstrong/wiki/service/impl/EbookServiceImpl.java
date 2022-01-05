@@ -10,6 +10,7 @@ import com.bigstrong.wiki.req.EbookQueryReq;
 import com.bigstrong.wiki.req.EbookSaveReq;
 import com.bigstrong.wiki.service.EbookService;
 import com.bigstrong.wiki.util.CopyUtil;
+import com.bigstrong.wiki.util.SnowFlake;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -25,6 +26,9 @@ import java.util.List;
 public class EbookServiceImpl implements EbookService {
     @Resource
     private EbookMapper ebookMapper;
+
+    @Resource
+    private SnowFlake snowFlake;
 
     @Override
     public PageResp<EbookQueryResp> getEbookList(EbookQueryReq req) {
@@ -45,12 +49,14 @@ public class EbookServiceImpl implements EbookService {
 
     @Override
     public void save(EbookSaveReq req) {
+        Ebook ebook = CopyUtil.copy(req, Ebook.class);
         if (ObjectUtils.isEmpty(req.getId())) {
             // 新增
-            ebookMapper.insert(CopyUtil.copy(req, Ebook.class));
+            ebook.setId(String.valueOf(snowFlake.nextId()));
+            ebookMapper.insert(ebook);
         } else {
             // 更新
-            ebookMapper.updateById(CopyUtil.copy(req, Ebook.class));
+            ebookMapper.updateById(ebook);
         }
     }
 }

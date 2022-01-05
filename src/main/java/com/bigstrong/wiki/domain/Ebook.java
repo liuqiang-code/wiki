@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 @TableName("ebook")
 public class Ebook {
-    private Integer id;
+    private String id;
 
     private String name;
 

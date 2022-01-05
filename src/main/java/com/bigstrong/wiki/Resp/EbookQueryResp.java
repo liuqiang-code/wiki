@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class EbookQueryResp {
-    private Integer id;
+    private String id;
 
     private String name;
 

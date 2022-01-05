@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class EbookQueryReq extends PageReq {
-    private Integer id;
+    private String id;
 
     private String name;
 }
