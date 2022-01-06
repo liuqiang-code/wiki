@@ -59,4 +59,9 @@ public class EbookServiceImpl implements EbookService {
             ebookMapper.updateById(ebook);
         }
     }
+
+    @Override
+    public void delete(String id) {
+        ebookMapper.deleteById(id);
+    }
 }

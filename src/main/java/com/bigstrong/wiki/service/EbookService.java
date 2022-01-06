@@ -23,4 +23,10 @@ public interface EbookService {
      * @param req 保存电子书请求对象
      */
     void save(EbookSaveReq req);
+
+    /**
+     * 删除电子书
+     * @param id 电子书id
+     */
+    void delete(String id);
 }
