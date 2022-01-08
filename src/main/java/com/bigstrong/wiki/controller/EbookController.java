@@ -6,6 +6,7 @@ import com.bigstrong.wiki.req.EbookSaveReq;
 import com.bigstrong.wiki.service.EbookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
 
 /**
  * @author BigStrong
@@ -19,12 +20,12 @@ public class EbookController {
     private EbookService ebookService;
 
     @RequestMapping("/list")
-    public CommonResp getEbookList(EbookQueryReq req) {
+    public CommonResp getEbookList(@Valid EbookQueryReq req) {
         return CommonResp.success(ebookService.getEbookList(req));
     }
 
     @PostMapping("/save")
-    public CommonResp save(@RequestBody EbookSaveReq req) {
+    public CommonResp save(@Valid @RequestBody EbookSaveReq req) {
         ebookService.save(req);
         return CommonResp.success();
     }

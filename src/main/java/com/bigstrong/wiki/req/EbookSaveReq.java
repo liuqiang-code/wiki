@@ -1,6 +1,7 @@
 package com.bigstrong.wiki.req;
 
 import lombok.Data;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author BigStrong
@@ -11,6 +12,7 @@ import lombok.Data;
 public class EbookSaveReq {
     private String id;
 
+    @NotNull(message = "名称不能为空")
     private String name;
 
     private String category1Id;

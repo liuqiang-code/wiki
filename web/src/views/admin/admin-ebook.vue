@@ -67,6 +67,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
 import axios from 'axios';
+import { message } from 'ant-design-vue';
 
 export default defineComponent({
   name: 'AdminEbook',
@@ -130,11 +131,15 @@ export default defineComponent({
       }).then((response) => {
         loading.value = false;
         const data = response.data;
-        ebooks.value = data.data.data;
+        if (data.success) {
+          ebooks.value = data.data.data;
 
-        // 重置分页按钮
-        pagination.value.current = params.page;
-        pagination.value.total = data.data.total;
+          // 重置分页按钮
+          pagination.value.current = params.page;
+          pagination.value.total = data.data.total;
+        } else {
+          message.error(data.message);
+        }
       });
     };
 
@@ -158,15 +163,17 @@ export default defineComponent({
     const handleModalOk = () => {
       modalLoading.value = true;
       axios.post("/ebook/save", ebook.value).then((response) => {
+        modalLoading.value = false;
         if (response.data.success) {
           modalVisible.value = false;
-          modalLoading.value = false;
 
           // 重新加载数据
           handleQuery({
             page: pagination.value.current,
             size: pagination.value.pageSize
           });
+        } else {
+          message.error(response.data.message);
         }
       })
     };
