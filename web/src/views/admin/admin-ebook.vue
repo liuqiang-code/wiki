@@ -3,9 +3,22 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <a-button type="primary" @click="add" size="large">
-        新增
-      </a-button>
+      <a-form :layout="formState.layout" :model="formState" v-bind="formItemLayout">
+        <a-form-item>
+          <a-input v-model:value="formState.fieldA"/>
+        </a-form-item>
+        <a-form-item :wrapper-col="buttonItemLayout.wrapperCol">
+          <a-button type="primary" @click="queryEbook">
+            查询
+          </a-button>
+        </a-form-item>
+        <a-form-item :wrapper-col="buttonItemLayout.wrapperCol">
+          <a-button type="primary" @click="add">
+            新增
+          </a-button>
+        </a-form-item>
+      </a-form>
+
       <a-table
           :columns="columns"
           :row-key="record => record.id"
@@ -65,7 +78,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, computed, UnwrapRef, reactive } from 'vue';
 import axios from 'axios';
 import { message } from 'ant-design-vue';
 
@@ -126,7 +139,8 @@ export default defineComponent({
       axios.get("/ebook/list", {
         params: {
           page: params.page,
-          size: params.size
+          size: params.size,
+          name: params.name
         }
       }).then((response) => {
         loading.value = false;
@@ -210,6 +224,34 @@ export default defineComponent({
       })
     };
 
+    /**
+     * 查询
+     */
+    const queryEbook = () => {
+      handleQuery({
+        page: 1,
+        size: pagination.value.pageSize,
+        name: formState.fieldA
+      });
+    }
+
+    interface FormState {
+      layout: 'horizontal' | 'vertical' | 'inline';
+      fieldA: string;
+    }
+
+    const formState: UnwrapRef<FormState> = reactive({
+      layout: 'inline',
+      fieldA: ''
+    });
+
+    const buttonItemLayout = computed(() => {
+      return {};
+    });
+
+    const formItemLayout = computed(() => {
+      return {};
+    });
 
     onMounted(() => {
       handleQuery({
@@ -230,7 +272,11 @@ export default defineComponent({
       modalLoading,
       ebook,
       add,
-      del
+      del,
+      buttonItemLayout,
+      formState,
+      formItemLayout,
+      queryEbook
     }
   }
 });
