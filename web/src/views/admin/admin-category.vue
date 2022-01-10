@@ -1,0 +1,261 @@
+<template>
+  <a-layout>
+    <a-layout-content
+        :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
+    >
+      <a-form :layout="formState.layout" :model="formState" v-bind="formItemLayout">
+        <a-form-item>
+          <a-input v-model:value="formState.fieldA"/>
+        </a-form-item>
+        <a-form-item :wrapper-col="buttonItemLayout.wrapperCol">
+          <a-button type="primary" @click="queryCategory">
+            查询
+          </a-button>
+        </a-form-item>
+        <a-form-item :wrapper-col="buttonItemLayout.wrapperCol">
+          <a-button type="primary" @click="add">
+            新增
+          </a-button>
+        </a-form-item>
+      </a-form>
+
+      <a-table
+          :columns="columns"
+          :row-key="record => record.id"
+          :data-source="categorys"
+          :pagination="pagination"
+          :loading="loading"
+          @change="handleTableChange"
+      >
+        <template #cover="{ text: cover }">
+          <img v-if="cover" :src="cover" alt="avatar" />
+        </template>
+        <template v-slot:action="{ text, record }">
+          <a-space size="small">
+            <a-button type="primary" @click="edit(record)">
+              编辑
+            </a-button>
+            <a-popconfirm
+                title="删除无法回退，确认删除？"
+                ok-text="是"
+                cancel-text="否"
+                @confirm="del(record.id)"
+            >
+              <a-button type="danger">
+                删除
+              </a-button>
+            </a-popconfirm>
+          </a-space>
+        </template>
+      </a-table>
+    </a-layout-content>
+  </a-layout>
+
+  <a-modal
+      title="分类表单"
+      v-model:visible="modalVisible"
+      :confirm-loading="modalLoading"
+      @ok="handleModalOk"
+  >
+    <a-form :model="category" :label-col="{span: 6}">
+      <a-form-item label="名称">
+        <a-input v-model:value="category.name" />
+      </a-form-item>
+      <a-form-item label="父分类">
+        <a-input v-model:value="category.parent" />
+      </a-form-item>
+      <a-form-item label="顺序">
+        <a-input v-model:value="category.sort" />
+      </a-form-item>
+    </a-form>
+  </a-modal>
+</template>
+
+<script lang="ts">
+import { defineComponent, onMounted, ref, computed, UnwrapRef, reactive } from 'vue';
+import axios from 'axios';
+import { message } from 'ant-design-vue';
+import {Tool} from '@/util/tool';
+
+export default defineComponent({
+  name: 'AdminCategory',
+  setup() {
+    const categorys = ref();
+    const pagination = ref({
+      current: 1,
+      pageSize: 10,
+      total: 0
+    });
+    const loading = ref(false);
+
+    const columns = [
+      {
+        title: '名称',
+        dataIndex: 'name'
+      },
+      {
+        title: '父分类',
+        key: 'parent',
+        dataIndex: 'parent',
+      },
+      {
+        title: '顺序',
+        dataIndex: 'sort'
+      },
+      {
+        title: 'Action',
+        key: 'action',
+        slots: { customRender: 'action' }
+      }
+    ];
+
+    /**
+     * 数据查询
+     **/
+    const handleQuery = (params: any) => {
+      loading.value = true;
+      axios.get("/category/list", {
+        params: {
+          page: params.page,
+          size: params.size,
+          name: params.name
+        }
+      }).then((response) => {
+        loading.value = false;
+        const data = response.data;
+        if (data.success) {
+          categorys.value = data.data.data;
+
+          // 重置分页按钮
+          pagination.value.current = params.page;
+          pagination.value.total = data.data.total;
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
+
+    /**
+     * 表格点击页码时触发
+     */
+    const handleTableChange = (pagination: any) => {
+      console.log("看看自带的分页参数都有啥：" + pagination);
+      handleQuery({
+        page: pagination.current,
+        size: pagination.pageSize
+      });
+    };
+
+    /**
+     * 表单
+     */
+    const category = ref({})
+    const modalVisible = ref(false);
+    const modalLoading = ref(false);
+    const handleModalOk = () => {
+      modalLoading.value = true;
+      axios.post("/category/save", category.value).then((response) => {
+        modalLoading.value = false;
+        if (response.data.success) {
+          modalVisible.value = false;
+
+          // 重新加载数据
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize
+          });
+        } else {
+          message.error(response.data.message);
+        }
+      })
+    };
+
+    /**
+     * 编辑
+     * @param record 待编辑记录
+     */
+    const edit = (record: any) => {
+      modalVisible.value = true;
+      category.value = Tool.copy(record);
+    }
+
+    /**
+     * 新增
+     */
+    const add = () => {
+      modalVisible.value = true;
+      category.value = {};
+    }
+
+    /**
+     * 删除
+     */
+    const del = (id: any) => {
+      axios.delete("/category/delete/" + id).then((response) => {
+        if (response.data.success) {
+          // 重新加载数据
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize
+          });
+        }
+      })
+    };
+
+    /**
+     * 查询
+     */
+    const queryCategory = () => {
+      handleQuery({
+        page: 1,
+        size: pagination.value.pageSize,
+        name: formState.fieldA
+      });
+    }
+
+    interface FormState {
+      layout: 'horizontal' | 'vertical' | 'inline';
+      fieldA: string;
+    }
+
+    const formState: UnwrapRef<FormState> = reactive({
+      layout: 'inline',
+      fieldA: ''
+    });
+
+    const buttonItemLayout = computed(() => {
+      return {};
+    });
+
+    const formItemLayout = computed(() => {
+      return {};
+    });
+
+    onMounted(() => {
+      handleQuery({
+        page: 1,
+        size: pagination.value.pageSize
+      });
+    });
+
+    return {
+      categorys,
+      pagination,
+      columns,
+      loading,
+      handleTableChange,
+      handleModalOk,
+      edit,
+      modalVisible,
+      modalLoading,
+      category,
+      add,
+      del,
+      buttonItemLayout,
+      formState,
+      formItemLayout,
+      queryCategory
+    }
+  }
+});
+</script>

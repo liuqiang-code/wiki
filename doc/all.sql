@@ -22,3 +22,19 @@ create table `ebook` (
 
 insert into `ebook` (id, name, description) values (1, 'Spring Boot 入门教程', '零基础入门Java开发，企业级应用开发最佳首选框架');
 insert into `ebook` (id, name, description) values (2, 'Vue 入门教程', '零基础入门Vue开发，企业级应用开发最佳首选前端框架');
+
+# 分类
+drop table if exists `category`;
+create table `category` (
+    `id` varchar(64) not null comment 'id',
+    `parent` varchar(64) not null default '0' comment '父id',
+    `name` varchar(64) not null comment '名称',
+    `sort` int comment '排序',
+    primary key (`id`)
+) engine=innodb default charset=utf8mb4 comment='分类';
+
+insert into `category` (id, parent, name, sort) values ('100', '000', '前端开发', 100) , ('101', '100', 'Vue', 101), ('102', '100', 'HTML & CSS', 102);
+insert into `category` (id, parent, name, sort) values ('200', '000', 'Java', 200) , ('201', '200', '基础应用', 201), ('202', '200', '框架应用', 202);
+insert into `category` (id, parent, name, sort) values ('300', '000', 'Python', 300) , ('301', '300', '基础应用', 301), ('302', '300', '进阶方向应用', 302);
+insert into `category` (id, parent, name, sort) values ('400', '000', '数据库', 400) , ('401', '400', 'MySql', 401);
+insert into `category` (id, parent, name, sort) values ('500', '000', '其它', 500) , ('501', '500', '服务器', 501), ('502', '500', '开发工具', 502), ('503', '500', '热门服务端语言', 503);

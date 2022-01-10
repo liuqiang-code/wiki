@@ -6,7 +6,7 @@ import lombok.Data;
 /**
  * @author BigStrong
  * @date 2021/12/26
- * @description
+ * @description 电子书表DO对象
  */
 @Data
 @TableName("ebook")
