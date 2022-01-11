@@ -63,4 +63,11 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(String id) {
         categoryMapper.deleteById(id);
     }
+
+    @Override
+    public List<CategoryQueryResp> allCategory() {
+        List<Category> categories = categoryMapper.selectList(new LambdaQueryWrapper<Category>()
+                .orderBy(true, true, Category::getSort));
+        return CopyUtil.copyList(categories, CategoryQueryResp.class);
+    }
 }

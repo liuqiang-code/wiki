@@ -5,6 +5,8 @@ import com.bigstrong.wiki.Resp.PageResp;
 import com.bigstrong.wiki.req.CategoryQueryReq;
 import com.bigstrong.wiki.req.CategorySaveReq;
 
+import java.util.List;
+
 /**
  * @author BigStrong
  * @date 2021/12/26
@@ -29,4 +31,10 @@ public interface CategoryService {
      * @param id 类别id
      */
     void delete(String id);
+
+    /**
+     * 查询所有分类
+     * @return 所有分类
+     */
+    List<CategoryQueryResp> allCategory();
 }

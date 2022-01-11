@@ -25,6 +25,11 @@ public class CategoryController {
         return CommonResp.success(categoryService.getCategoryList(req));
     }
 
+    @RequestMapping("/all")
+    public CommonResp all() {
+        return CommonResp.success(categoryService.allCategory());
+    }
+
     @PostMapping("/save")
     public CommonResp save(@Valid @RequestBody CategorySaveReq req) {
         categoryService.save(req);

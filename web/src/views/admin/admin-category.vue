@@ -4,9 +4,6 @@
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
       <a-form :layout="formState.layout" :model="formState" v-bind="formItemLayout">
-        <a-form-item>
-          <a-input v-model:value="formState.fieldA"/>
-        </a-form-item>
         <a-form-item :wrapper-col="buttonItemLayout.wrapperCol">
           <a-button type="primary" @click="queryCategory">
             查询
@@ -22,10 +19,9 @@
       <a-table
           :columns="columns"
           :row-key="record => record.id"
-          :data-source="categorys"
-          :pagination="pagination"
+          :data-source="level1"
           :loading="loading"
-          @change="handleTableChange"
+          :pagination="false"
       >
         <template #cover="{ text: cover }">
           <img v-if="cover" :src="cover" alt="avatar" />
@@ -81,11 +77,6 @@ export default defineComponent({
   name: 'AdminCategory',
   setup() {
     const categorys = ref();
-    const pagination = ref({
-      current: 1,
-      pageSize: 10,
-      total: 0
-    });
     const loading = ref(false);
 
     const columns = [
@@ -110,39 +101,32 @@ export default defineComponent({
     ];
 
     /**
+     * 一级分类树，children 属性就是二级分类
+     * [{
+     *    id: '',
+     *    name: '',
+     *    children: [{
+     *      id: ''，
+     *      name: ''
+     *    }]
+     * }]
+     */
+    const level1 = ref();
+
+    /**
      * 数据查询
      **/
-    const handleQuery = (params: any) => {
+    const handleQuery = () => {
       loading.value = true;
-      axios.get("/category/list", {
-        params: {
-          page: params.page,
-          size: params.size,
-          name: params.name
-        }
-      }).then((response) => {
+      axios.get("/category/all").then((response) => {
         loading.value = false;
         const data = response.data;
         if (data.success) {
-          categorys.value = data.data.data;
-
-          // 重置分页按钮
-          pagination.value.current = params.page;
-          pagination.value.total = data.data.total;
+          level1.value = [];
+          level1.value = Tool.array2Tree(data.data, '000');
         } else {
           message.error(data.message);
         }
-      });
-    };
-
-    /**
-     * 表格点击页码时触发
-     */
-    const handleTableChange = (pagination: any) => {
-      console.log("看看自带的分页参数都有啥：" + pagination);
-      handleQuery({
-        page: pagination.current,
-        size: pagination.pageSize
       });
     };
 
@@ -160,10 +144,7 @@ export default defineComponent({
           modalVisible.value = false;
 
           // 重新加载数据
-          handleQuery({
-            page: pagination.value.current,
-            size: pagination.value.pageSize
-          });
+          handleQuery();
         } else {
           message.error(response.data.message);
         }
@@ -194,10 +175,7 @@ export default defineComponent({
       axios.delete("/category/delete/" + id).then((response) => {
         if (response.data.success) {
           // 重新加载数据
-          handleQuery({
-            page: pagination.value.current,
-            size: pagination.value.pageSize
-          });
+          handleQuery();
         }
       })
     };
@@ -206,11 +184,7 @@ export default defineComponent({
      * 查询
      */
     const queryCategory = () => {
-      handleQuery({
-        page: 1,
-        size: pagination.value.pageSize,
-        name: formState.fieldA
-      });
+      handleQuery();
     }
 
     interface FormState {
@@ -232,18 +206,12 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      handleQuery({
-        page: 1,
-        size: pagination.value.pageSize
-      });
+      handleQuery();
     });
 
     return {
-      categorys,
-      pagination,
       columns,
       loading,
-      handleTableChange,
       handleModalOk,
       edit,
       modalVisible,
@@ -254,7 +222,8 @@ export default defineComponent({
       buttonItemLayout,
       formState,
       formItemLayout,
-      queryCategory
+      queryCategory,
+      level1
     }
   }
 });
