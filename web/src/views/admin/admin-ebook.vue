@@ -253,6 +253,11 @@ export default defineComponent({
           categorys = data.data;
           level1.value = [];
           level1.value = Tool.array2Tree(data.data, '000');
+          // 加载完分类后再加载电子书，防止分类加载慢导致的数据渲染异常
+          handleQuery({
+            page: 1,
+            size: pagination.value.pageSize
+          });
         } else {
           message.error(data.message);
         }
@@ -290,10 +295,6 @@ export default defineComponent({
 
     onMounted(() => {
       handleQueryCategory();
-      handleQuery({
-        page: 1,
-        size: pagination.value.pageSize
-      });
     });
 
     return {
