@@ -35,8 +35,9 @@ public class EbookServiceImpl implements EbookService {
         // 设置分页参数
         Page<Ebook> ebookPage = new Page<>(req.getPage(), req.getSize());
 
-        Page<Ebook> ebookList = ebookMapper.selectPage(ebookPage, new LambdaQueryWrapper<Ebook>().like(!ObjectUtils.isEmpty(req.getName()),
-                Ebook::getName, req.getName()));
+        Page<Ebook> ebookList = ebookMapper.selectPage(ebookPage, new LambdaQueryWrapper<Ebook>()
+                .eq(!ObjectUtils.isEmpty(req.getCategoryId2()), Ebook::getCategory2Id, req.getCategoryId2())
+                .like(!ObjectUtils.isEmpty(req.getName()), Ebook::getName, req.getName()));
 
         List<EbookQueryResp> respList = CopyUtil.copyList(ebookList.getRecords(), EbookQueryResp.class);
 

@@ -7,10 +7,8 @@
         @click="handleClick"
     >
       <a-menu-item key="welcome">
-        <router-link :to="'/'">
-          <MailOutlined />
-          <span>欢迎</span>
-        </router-link>
+        <MailOutlined />
+        <span>欢迎</span>
       </a-menu-item>
       <a-sub-menu v-for="item in level1" :key="item.id">
         <template v-slot:title>
@@ -25,7 +23,10 @@
     <a-layout-content
       :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
   >
-      <a-list item-layout="vertical" size="large" :data-source="ebooks" :grid="{ gutter: 20, column: 3 }">
+      <div class="welcome" v-show="isShowWelcome">
+        <h1>欢迎使用</h1>
+      </div>
+      <a-list v-show="!isShowWelcome" item-layout="vertical" size="large" :data-source="ebooks" :grid="{ gutter: 20, column: 3 }">
         <template #renderItem="{ item }">
           <a-list-item key="item.name">
             <template #actions>
@@ -72,16 +73,23 @@ export default defineComponent({
     const ebooks = ref();
     onMounted(() => {
       handleQueryCategory();
+    });
+
+    /**
+     * 查询电子书
+     */
+    const queryEbooks = () => {
       axios.get('/ebook/list', {
         params: {
           page: 1,
-          size: 1000
+          size: 1000,
+          categoryId2: categoryId2
         }
       }).then(response => {
         const data = response.data;
         ebooks.value = data.data.data;
       })
-    });
+    }
 
     /**
      * 查询所有分类
@@ -101,8 +109,17 @@ export default defineComponent({
       });
     };
 
-    const handleClick = () => {
-      console.log("menu click");
+    const isShowWelcome = ref(true);
+    let categoryId2 = 0;
+
+    const handleClick = (value: any) => {
+      if (value.key === 'welcome') {
+        isShowWelcome.value = true;
+      } else {
+        isShowWelcome.value = false;
+        categoryId2 = value.key;
+        queryEbooks();
+      }
     }
 
     return {
@@ -113,7 +130,8 @@ export default defineComponent({
         { type: 'MessageOutlined', text: '2' },
       ],
       handleClick,
-      level1
+      level1,
+      isShowWelcome
     }
   }
 });
