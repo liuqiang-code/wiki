@@ -52,7 +52,7 @@ public class DocServiceImpl implements DocService {
         Doc doc = CopyUtil.copy(req, Doc.class);
         if (ObjectUtils.isEmpty(req.getId())) {
             // 新增
-            doc.setId(snowFlake.nextId());
+            doc.setId(String.valueOf(snowFlake.nextId()));
             docMapper.insert(doc);
         } else {
             // 更新

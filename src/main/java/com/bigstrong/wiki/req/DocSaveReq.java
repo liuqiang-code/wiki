@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class DocSaveReq {
-    private Long id;
+    private String id;
 
     @NotNull(message = "【电子书】不能为空")
     private Long ebookId;

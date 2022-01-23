@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class Doc {
-    private Long id;
+    private String id;
 
     private Long ebookId;
 
